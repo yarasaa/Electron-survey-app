@@ -21,6 +21,23 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { resolveHtmlPath } from './util';
 
+import Store from 'electron-store';
+
+const store = new Store();
+
+let username = '';
+
+ipcMain.on('electron-store-get', async (event, val) => {
+  event.returnValue = store.get(val);
+});
+ipcMain.on('electron-store-set', async (event, key, val) => {
+  console.log(key, val, '********');
+  if (key == 'username') {
+    username = val;
+  }
+  store.set(key, val);
+});
+
 var isAppQuitting = false;
 let tray = null;
 let hour = new Date();
@@ -28,8 +45,7 @@ let pcTime = new Date();
 hour.setHours(randomHour(9, 11), randomMinute(1, 58), 0);
 
 const NOTIFICATION_TITLE = 'Personel Memnuniyet Anketi';
-const NOTIFICATION_BODY =
-  'Merhaba, \nburaya tıklayarak bugün bize nasıl hissettiğinizi söyleyebilirsiniz.';
+const NOTIFICATION_BODY = `Merhaba ${username},  \nburaya tıklayarak bugün bize nasıl hissettiğinizi söyleyebilirsiniz.`;
 function showNotification() {
   return new Notification({
     title: NOTIFICATION_TITLE,

@@ -10,7 +10,12 @@ const checkVote: any = {
 };
 declare global {
   interface Window {
-    testData: any;
+    electron: {
+      store: {
+        get: (key: string) => any;
+        set: (key: string, val: any) => void;
+      };
+    };
   }
 }
 const Hello = () => {
@@ -25,6 +30,8 @@ const Hello = () => {
   async function getUser() {
     const result = await API.USERS_LIST();
     console.log(result);
+    window.electron.store.set('username', result?.data?.[0]?.userName);
+
     setUser(result?.data?.[0]);
   }
 
