@@ -22,6 +22,7 @@ import log from 'electron-log';
 import { resolveHtmlPath } from './util';
 
 import Store from 'electron-store';
+import { threadId } from 'worker_threads';
 
 const store = new Store();
 
@@ -74,9 +75,10 @@ function traySystem() {
 
 function startNotifyTimerAM() {
   var timeInterval: any = setInterval(() => {
-    if (hour == pcTime) {
+    if (hour == hour) {
       console.log(hour, pcTime);
       showNotification().show();
+      mainWindow.show();
       clearInterval(timeInterval);
       hour.setHours(randomHour(13, 17), randomMinute(1, 58), 0);
       startNotifyTimerPM();
@@ -86,7 +88,7 @@ function startNotifyTimerAM() {
 
 function startNotifyTimerPM() {
   var timeInterval: any = setInterval(() => {
-    if (hour == pcTime) {
+    if (hour == hour) {
       console.log(hour, pcTime);
       showNotification().show();
       clearInterval(timeInterval);
@@ -173,7 +175,7 @@ const createWindow = async () => {
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      devTools: true,
+      devTools: false,
       nodeIntegration: false,
     },
   });
