@@ -66,6 +66,7 @@ const Hello = () => {
           marginBottom: '2rem',
           lineHeight: '2rem',
           fontSize: '1.3rem',
+          fontFamily: 'Brush Script MT',
         }}
       >
         <p style={{ textAlign: 'center' }}>Merhaba {user?.userName},</p>

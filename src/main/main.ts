@@ -22,7 +22,7 @@ import log from 'electron-log';
 import { resolveHtmlPath } from './util';
 
 import Store from 'electron-store';
-import { threadId } from 'worker_threads';
+import { screen } from 'electron/main';
 
 const store = new Store();
 
@@ -58,6 +58,7 @@ function showNotification() {
 }
 
 console.log(hour);
+
 function randomHour(min: any, max: any) {
   return Math.random() * (max - min) + min;
 }
@@ -88,7 +89,7 @@ function startNotifyTimerAM() {
 
 function startNotifyTimerPM() {
   var timeInterval: any = setInterval(() => {
-    if (hour == hour) {
+    if (hour == pcTime) {
       console.log(hour, pcTime);
       showNotification().show();
       clearInterval(timeInterval);
@@ -171,16 +172,21 @@ const createWindow = async () => {
     width: 450,
     height: 300,
     icon: getAssetPath('happy.ico'),
-    resizable: true,
+    resizable: false,
     autoHideMenuBar: true,
+    transparent: false,
+    frame: true,
+    opacity: 0.9,
+    titleBarStyle: 'default',
+    x: screen.getPrimaryDisplay().workAreaSize.width - 450,
+    y: screen.getPrimaryDisplay().workAreaSize.height - 300,
+
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       devTools: false,
       nodeIntegration: false,
     },
   });
-
-  mainWindow.notification = showNotification();
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
