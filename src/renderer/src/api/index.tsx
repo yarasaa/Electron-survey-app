@@ -4,4 +4,5 @@ import api from './api';
 export const API = Object.freeze({
   USERS_LIST: async (): Promise<any> => await api.get('/users'),
   USERS_POST: async (data: any): Promise<any> => await api.post('/users', data),
+  USERS_PUT: async (data: any): Promise<any> => await api.put('/users', data),
 });

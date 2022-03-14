@@ -73,10 +73,12 @@ function traySystem() {
     mainWindow?.isVisible() ? mainWindow.hide() : mainWindow?.show();
   });
 }
+let i = 0;
 
 function startNotifyTimerAM() {
   var timeInterval: any = setInterval(() => {
-    if (hour == hour) {
+    store.set('date', new Date());
+    if (hour == pcTime) {
       console.log(hour, pcTime);
       showNotification().show();
       mainWindow.show();
@@ -89,6 +91,7 @@ function startNotifyTimerAM() {
 
 function startNotifyTimerPM() {
   var timeInterval: any = setInterval(() => {
+    store.set('date', new Date());
     if (hour == pcTime) {
       console.log(hour, pcTime);
       showNotification().show();
@@ -172,7 +175,7 @@ const createWindow = async () => {
     width: 450,
     height: 300,
     icon: getAssetPath('happy.ico'),
-    resizable: false,
+    resizable: true,
     autoHideMenuBar: true,
     transparent: false,
     frame: true,
@@ -183,7 +186,7 @@ const createWindow = async () => {
 
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      devTools: false,
+      devTools: true,
       nodeIntegration: false,
     },
   });

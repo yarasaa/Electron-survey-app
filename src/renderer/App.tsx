@@ -40,16 +40,31 @@ const Hello = () => {
   }, []);
 
   useEffect(() => {
-    if (!!check) {
-      let ddd: any = {
-        vote: checkVote[check],
+    let voteAmCheck = new Date(window?.electron?.store?.get('date'));
+    console.log(voteAmCheck);
+
+    let ddd: any = {};
+    if (!!check && voteAmCheck?.getHours() < 13) {
+      ddd = {
+        voteBeforeAm: checkVote[check],
         userId: user.userId,
         department: user.department,
         date: new Date(),
+        voteAfterAm: null,
       };
-      postVote(ddd);
+    } else if (!!check && voteAmCheck?.getHours() > 13) {
+      ddd = {
+        voteAfterAm: checkVote[check],
+        userId: user.userId,
+        date: new Date(),
+      };
     }
+    if (!!check) postVote(ddd);
   }, [check]);
+
+  useEffect(() => {
+    console.log(window.electron.store.get('date'));
+  }, [window.electron.store.get('zaman')]);
 
   async function postVote(params: any) {
     let result = await API.USERS_POST(params);
@@ -67,10 +82,18 @@ const Hello = () => {
           lineHeight: '2rem',
           fontSize: '1.3rem',
           fontFamily: 'Brush Script MT',
+          textAlign: 'center',
         }}
       >
-        <p style={{ textAlign: 'center' }}>Merhaba {user?.userName},</p>
-        Bugun kendini nasıl hissediyorsun?
+        <span
+          style={{
+            textAlign: 'center',
+          }}
+        >
+          Merhaba {user?.userName},
+        </span>
+        <br></br>
+        Bugün kendini nasıl hissediyorsun?
       </div>
       <ul className="feedback">
         <li
