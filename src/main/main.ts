@@ -22,7 +22,9 @@ import log from 'electron-log';
 import { resolveHtmlPath } from './util';
 
 import Store from 'electron-store';
-import { threadId } from 'worker_threads';
+import { screen } from 'electron/main';
+
+
 
 const store = new Store();
 
@@ -58,6 +60,7 @@ function showNotification() {
 }
 
 console.log(hour);
+
 function randomHour(min: any, max: any) {
   return Math.random() * (max - min) + min;
 }
@@ -72,10 +75,12 @@ function traySystem() {
     mainWindow?.isVisible() ? mainWindow.hide() : mainWindow?.show();
   });
 }
+let i = 0;
 
 function startNotifyTimerAM() {
   var timeInterval: any = setInterval(() => {
-    if (hour == hour) {
+    store.set('date', new Date());
+    if (hour == pcTime) {
       console.log(hour, pcTime);
       showNotification().show();
       mainWindow.show();
@@ -86,9 +91,28 @@ function startNotifyTimerAM() {
   }, 1000);
 }
 
+
+function osUserName() {
+var os = require('os');
+var osName=os.userInfo().username
+
+
+const afterRemoveOsName = osName.slice(2);
+console.log(afterRemoveOsName);
+//window.electron.store.set('osUser',afterRemoveOsName)
+
+
+ipcMain.on('electron-store-set', async (event, key, val) => {
+  console.log(key, val, '********');
+  
+  store.set('osUser', afterRemoveOsName);
+});
+}
+osUserName();
 function startNotifyTimerPM() {
   var timeInterval: any = setInterval(() => {
-    if (hour == hour) {
+    store.set('date', new Date());
+    if (hour == pcTime) {
       console.log(hour, pcTime);
       showNotification().show();
       clearInterval(timeInterval);
@@ -173,14 +197,20 @@ const createWindow = async () => {
     icon: getAssetPath('happy.ico'),
     resizable: true,
     autoHideMenuBar: true,
+    transparent: false,
+    frame: true,
+    opacity: 1,
+    titleBarStyle: 'default',
+    x: screen.getPrimaryDisplay().workAreaSize.width - 450,
+    y: screen.getPrimaryDisplay().workAreaSize.height - 300,
+
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      devTools: false,
+      devTools: true,
       nodeIntegration: false,
+      webSecurity:false,
     },
   });
-
-  mainWindow.notification = showNotification();
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
