@@ -290,3 +290,7 @@ app.on('activate', () => {
     createWindow();
   }
 });
+function cors(): any {
+  throw new Error('Function not implemented.');
+}
+

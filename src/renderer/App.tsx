@@ -1,10 +1,10 @@
-import moment from 'moment';
+
 import { useEffect, useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { API } from './src/api';
 
-let dateInfo=new Date(moment().format('MMMM Do YYYY, h:mm:ss'));
+//let dateInfo=new Date(moment().format('MMMM Do YYYY, h:mm:ss'));
 
 const checkVote: any = {
   sad: 1,
