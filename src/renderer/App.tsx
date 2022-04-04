@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
@@ -24,16 +23,9 @@ declare global {
 const Hello = () => {
   const [check, setCheck] = useState('');
   const [message, setMessage] = useState('');
-  const [user, setUser] = useState({
-    sicilNo:'',
-    firstName: '',
-    divisionName: '',
-    unitName: '',
-    meslekAd:'',
-    id:null,
-  });
+  const [user, setUser] = useState<any>();
   // const [userVote, setUserVote]=useState<any>({
-    
+
   //   department:'',
   //   section:'',
   //   Unit:'',
@@ -43,140 +35,85 @@ const Hello = () => {
 
   // })
 
-  const [userInfo, setUserInfo]=useState({
-    UserId:window.electron.store.get('osUser')||""
-  })
-
+  const [userInfo, setUserInfo] = useState({
+    UserId: window.electron.store.get('osUser') || '',
+  });
 
   console.log(window.electron.store.get('osUser'));
-  const [userIdFromData,setUserIdFromdata]=useState({
-    id:null,
-    userId:''
+  const [userIdFromData, setUserIdFromdata] = useState({
+    id: null,
+    userId: '',
   });
-    
+
   async function getUserId() {
     const result = await API.USERS_INFOLIST();
     setUserIdFromdata(result?.data?.[0]);
     console.log(result?.data?.[0]);
-    
+
     if (result) {
       setMessage(result?.data?.message);
     }
-
   }
   useEffect(() => {
-<<<<<<< HEAD
-    let voteAmCheck = new Date(window?.electron?.store?.get('date'));
-    console.log(voteAmCheck);
-
-    let ddd: any = {};
-    if (!!check && voteAmCheck?.getHours() < 13) {
-      ddd = {
-        voteBeforeAm: checkVote[check],
-        userId: user.userId,
-        department: user.department,
-        date: new Date(),
-        voteAfterAm: null,
-      };
-    } else if (!!check && voteAmCheck?.getHours() > 13) {
-      ddd = {
-        voteAfterAm: checkVote[check],
-        userId: user.userId,
-        date: new Date(),
-      };
-    }
-    if (!!check) postVote(ddd);
-  }, [check]);
-
-  useEffect(() => {
-    console.log(window.electron.store.get('date'));
-  }, [window.electron.store.get('zaman')]);
-
-  async function postVote(params: any) {
-    let result = await API.USERS_POST(params);
-    console.log(result);
-    if (result) {
-=======
     getUserId();
-      
-  },[]);
+  }, []);
 
-
-  async function postUserInfo(userInfo:any) {
-    const result=await API.USERS_POSTINFO(userInfo);
+  async function postUserInfo(userInfo: any) {
+    const result = await API.USERS_POSTINFO(userInfo);
     setUserInfo(result?.data?.[0]);
     console.log(userInfo);
-    if(result){
-      setMessage(result.data?.message)
+    if (result) {
+      setMessage(result.data?.message);
     }
   }
-   
-  
-   useEffect(() => {
+
+  useEffect(() => {
     postUserInfo(userInfo);
-      
-  },[]);
+  }, []);
 
-
-  
-
-  async function getUserFromBankData(){
-    const result=await API.USERS_LIST();
+  async function getUserFromBankData() {
+    const result = await API.USERS_LIST();
     setUser({
-      divisionName:result?.divisonName,
-      firstName:result?.firstName,
-      sicilNo:result?.sicilNo,
-      meslekAd:result?.meslekAd,
-      unitName:result?.unitName,
-      id:null,
-
-
+      divisionName: result?.divisonName,
+      firstName: result?.firstName,
+      sicilNo: result?.sicilNo,
+      meslekAd: result?.meslekAd,
+      unitName: result?.unitName,
+      id: null,
     });
     console.log(user);
     // window.electron.store.set('firstname',result?.data?.firstname)
-    
-    if(result){
->>>>>>> new
+
+    if (result) {
       setMessage(result?.data?.message);
     }
   }
 
   useEffect(() => {
     getUserFromBankData();
+  }, []);
 
-  },[]);
-
-
-  
-  
-  async function postVote(params:any) {
-    const result=await API.USERS_POST(params);
-    if(result){
-      console.log(result)
-      setMessage(result?.data?.message)
+  async function postVote(params: any) {
+    const result = await API.USERS_POST(params);
+    if (result) {
+      console.log(result);
+      setMessage(result?.data?.message);
     }
   }
 
- 
-
   useEffect(() => {
-    let postData:any={};
-     
-    if(!!check){
-      postData={
-    department:user.divisionName,
-    section:user.meslekAd,
-    Unit:user.unitName,
-    vote:checkVote[check],
-    userId:userIdFromData.id,
-    
-      }
+    if (!!check) {
+      let postData = {
+        department: user.divisionName,
+        section: user.meslekAd,
+        Unit: user.unitName,
+        vote: checkVote[check],
+        userId: userIdFromData.id,
+      };
+      postVote(postData);
     }
-      if(!!check) postVote(postData);
-  },[check]);
+  }, [check]);
 
-
-  
   return (
     <div>
       <div
@@ -184,27 +121,17 @@ const Hello = () => {
           marginBottom: '2rem',
           lineHeight: '2rem',
           fontSize: '1.3rem',
-<<<<<<< HEAD
-          fontFamily: 'Brush Script MT',
-=======
           fontFamily: 'sans-serif',
->>>>>>> new
           textAlign: 'center',
         }}
       >
         <span
           style={{
-<<<<<<< HEAD
             textAlign: 'center',
-          }}
-        >
-          Merhaba {user?.userName},
-=======
-            textAlign: 'center', fontFamily:'sans-serif'
+            fontFamily: 'sans-serif',
           }}
         >
           Merhaba {window.electron.store.get('firstname')},
->>>>>>> new
         </span>
         <br></br>
         Bugün kendini nasıl hissediyorsun?
