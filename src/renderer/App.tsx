@@ -1,7 +1,10 @@
+
 import { useEffect, useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { API } from './src/api';
+
+//let dateInfo=new Date(moment().format('MMMM Do YYYY, h:mm:ss'));
 
 const checkVote: any = {
   sad: 1,
@@ -22,24 +25,47 @@ const Hello = () => {
   const [check, setCheck] = useState('');
   const [message, setMessage] = useState('');
   const [user, setUser] = useState({
-    userName: '',
-    userId: '',
-    department: '',
+    sicilNo:'',
+    firstName: '',
+    divisionName: '',
+    unitName: '',
+    meslekAd:'',
+    id:null,
   });
+  // const [userVote, setUserVote]=useState<any>({
+    
+  //   department:'',
+  //   section:'',
+  //   Unit:'',
+  //   vote:'',
+  //   userId:'',
+  //   date:null
 
-  async function getUser() {
-    const result = await API.USERS_LIST();
-    console.log(result);
-    window.electron.store.set('username', result?.data?.[0]?.userName);
+  // })
 
-    setUser(result?.data?.[0]);
+  const [userInfo, setUserInfo]=useState({
+    UserId:window.electron.store.get('osUser')||""
+  })
+
+
+  console.log(window.electron.store.get('osUser'));
+  const [userIdFromData,setUserIdFromdata]=useState({
+    id:null,
+    userId:''
+  });
+    
+  async function getUserId() {
+    const result = await API.USERS_INFOLIST();
+    setUserIdFromdata(result?.data?.[0]);
+    console.log(result?.data?.[0]);
+    
+    if (result) {
+      setMessage(result?.data?.message);
+    }
+
   }
-
   useEffect(() => {
-    getUser();
-  }, []);
-
-  useEffect(() => {
+<<<<<<< HEAD
     let voteAmCheck = new Date(window?.electron?.store?.get('date'));
     console.log(voteAmCheck);
 
@@ -70,10 +96,87 @@ const Hello = () => {
     let result = await API.USERS_POST(params);
     console.log(result);
     if (result) {
+=======
+    getUserId();
+      
+  },[]);
+
+
+  async function postUserInfo(userInfo:any) {
+    const result=await API.USERS_POSTINFO(userInfo);
+    setUserInfo(result?.data?.[0]);
+    console.log(userInfo);
+    if(result){
+      setMessage(result.data?.message)
+    }
+  }
+   
+  
+   useEffect(() => {
+    postUserInfo(userInfo);
+      
+  },[]);
+
+
+  
+
+  async function getUserFromBankData(){
+    const result=await API.USERS_LIST();
+    setUser({
+      divisionName:result?.divisonName,
+      firstName:result?.firstName,
+      sicilNo:result?.sicilNo,
+      meslekAd:result?.meslekAd,
+      unitName:result?.unitName,
+      id:null,
+
+
+    });
+    console.log(user);
+    // window.electron.store.set('firstname',result?.data?.firstname)
+    
+    if(result){
+>>>>>>> new
       setMessage(result?.data?.message);
     }
   }
 
+  useEffect(() => {
+    getUserFromBankData();
+
+  },[]);
+
+
+  
+  
+  async function postVote(params:any) {
+    const result=await API.USERS_POST(params);
+    if(result){
+      console.log(result)
+      setMessage(result?.data?.message)
+    }
+  }
+
+ 
+
+  useEffect(() => {
+    let postData:any={};
+     
+    if(!!check){
+      postData={
+    department:user.divisionName,
+    section:user.meslekAd,
+    Unit:user.unitName,
+    vote:checkVote[check],
+    userId:userIdFromData.id,
+    
+      }
+    }
+      if(!!check) postVote(postData);
+  },[check]);
+
+
+  
   return (
     <div>
       <div
@@ -81,16 +184,27 @@ const Hello = () => {
           marginBottom: '2rem',
           lineHeight: '2rem',
           fontSize: '1.3rem',
+<<<<<<< HEAD
           fontFamily: 'Brush Script MT',
+=======
+          fontFamily: 'sans-serif',
+>>>>>>> new
           textAlign: 'center',
         }}
       >
         <span
           style={{
+<<<<<<< HEAD
             textAlign: 'center',
           }}
         >
           Merhaba {user?.userName},
+=======
+            textAlign: 'center', fontFamily:'sans-serif'
+          }}
+        >
+          Merhaba {window.electron.store.get('firstname')},
+>>>>>>> new
         </span>
         <br></br>
         Bugün kendini nasıl hissediyorsun?

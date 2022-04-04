@@ -23,6 +23,11 @@ import { resolveHtmlPath } from './util';
 
 import Store from 'electron-store';
 import { screen } from 'electron/main';
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> new
 
 const store = new Store();
 
@@ -89,6 +94,24 @@ function startNotifyTimerAM() {
   }, 1000);
 }
 
+
+function osUserName() {
+var os = require('os');
+var osName=os.userInfo().username
+
+
+const afterRemoveOsName = osName.slice(2);
+console.log(afterRemoveOsName);
+//window.electron.store.set('osUser',afterRemoveOsName)
+
+
+ipcMain.on('electron-store-set', async (event, key, val) => {
+  console.log(key, val, '********');
+  
+  store.set('osUser', afterRemoveOsName);
+});
+}
+osUserName();
 function startNotifyTimerPM() {
   var timeInterval: any = setInterval(() => {
     store.set('date', new Date());
@@ -179,7 +202,11 @@ const createWindow = async () => {
     autoHideMenuBar: true,
     transparent: false,
     frame: true,
+<<<<<<< HEAD
     opacity: 0.9,
+=======
+    opacity: 1,
+>>>>>>> new
     titleBarStyle: 'default',
     x: screen.getPrimaryDisplay().workAreaSize.width - 450,
     y: screen.getPrimaryDisplay().workAreaSize.height - 300,
@@ -188,6 +215,7 @@ const createWindow = async () => {
       preload: path.join(__dirname, 'preload.js'),
       devTools: true,
       nodeIntegration: false,
+      webSecurity:false,
     },
   });
 
@@ -269,3 +297,7 @@ app.on('activate', () => {
     createWindow();
   }
 });
+function cors(): any {
+  throw new Error('Function not implemented.');
+}
+
