@@ -1,9 +1,10 @@
+import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { API } from './src/api';
 
-//let dateInfo=new Date(moment().format('MMMM Do YYYY, h:mm:ss'));
+let dateInfo=new Date(moment().format('MMMM Do YYYY, h:mm:ss'));
 
 const checkVote: any = {
   sad: 1,
@@ -47,8 +48,9 @@ const Hello = () => {
 
   async function getUserId() {
     const result = await API.USERS_INFOLIST();
-    setUserIdFromdata(result?.data?.[0]);
-    console.log(result?.data?.[0]);
+    console.log(result,result.data.data);
+    setUserIdFromdata(result?.data.data);
+    console.log(result?.data);
 
     if (result) {
       setMessage(result?.data?.message);
@@ -60,7 +62,8 @@ const Hello = () => {
 
   async function postUserInfo(userInfo: any) {
     const result = await API.USERS_POSTINFO(userInfo);
-    setUserInfo(result?.data?.[0]);
+    console.log(result)
+    setUserInfo(result.data);
     console.log(userInfo);
     if (result) {
       setMessage(result.data?.message);
@@ -73,12 +76,13 @@ const Hello = () => {
 
   async function getUserFromBankData() {
     const result = await API.USERS_LIST();
+    console.log("bankdata",result)
     setUser({
-      divisionName: result?.divisonName,
-      firstName: result?.firstName,
-      sicilNo: result?.sicilNo,
-      meslekAd: result?.meslekAd,
-      unitName: result?.unitName,
+      divisionName: result?.data?.divisionName,
+      firstName: result?.data?.firstName,
+      sicilNo: result?.data?.sicilNo,
+      meslekAd: result?.data?.meslekAd,
+      unitName: result?.data?.unitName,
       id: null,
     });
     console.log(user);
@@ -109,6 +113,7 @@ const Hello = () => {
         Unit: user.unitName,
         vote: checkVote[check],
         userId: userIdFromData.id,
+        
       };
       postVote(postData);
     }
