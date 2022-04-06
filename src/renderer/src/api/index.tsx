@@ -2,7 +2,7 @@ import api from './api';
 
 window.electron.store.get('osUser');
 let userSicil = window.electron.store.get('osUser');
-console.log(userSicil + 'test');
+console.log(userSicil + 'testindex');
 // eslint-disable-next-line import/prefer-default-export
 export const API = Object.freeze({
   USERS_LIST: async (): Promise<any> => await api.get('api/IKDb?sicilNo=5283'),
