@@ -42,23 +42,11 @@ const Hello = () => {
 
   console.log(window.electron.store.get('osUser'));
   const [userIdFromData, setUserIdFromdata] = useState({
-    id: null,
+    id: '',
     userId: '',
   });
 
-  async function getUserId() {
-    const result = await API.USERS_INFOLIST();
-    console.log(result,result.data.data);
-    setUserIdFromdata(result?.data.data);
-    console.log(result?.data);
-
-    if (result) {
-      setMessage(result?.data?.message);
-    }
-  }
-  useEffect(() => {
-    getUserId();
-  }, []);
+  
 
   async function postUserInfo(userInfo: any) {
     const result = await API.USERS_POSTINFO(userInfo);
@@ -72,6 +60,22 @@ const Hello = () => {
 
   useEffect(() => {
     postUserInfo(userInfo);
+  }, []);
+
+
+
+  async function getUserId() {
+    const result = await API.USERS_INFOLIST();
+    console.log(result,result.data.data);
+    setUserIdFromdata(result?.data.data);
+    console.log(result?.data);
+
+    if (result) {
+      setMessage(result?.data?.message);
+    }
+  }
+  useEffect(() => {
+    getUserId();
   }, []);
 
   async function getUserFromBankData() {
