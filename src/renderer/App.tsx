@@ -5,7 +5,7 @@ import './App.css';
 import { API } from './src/api';
 
 let dateInfo=new Date(moment().format('MMMM Do YYYY, h:mm:ss'));
-
+const delay = (ms: number | undefined) => new Promise((resolve) => setTimeout(resolve, ms));
 const checkVote: any = {
   sad: 1,
   ok: 2,
@@ -38,20 +38,25 @@ const Hello = () => {
 
   const [userInfo, setUserInfo] = useState({
     UserId: window.electron.store.get('osUser') || '',
+    
   });
 
-  console.log(window.electron.store.get('osUser'));
+  
   const [userIdFromData, setUserIdFromdata] = useState({
     id: '',
     userId: '',
   });
 
   
-
+  
   async function postUserInfo(userInfo: any) {
     const result = await API.USERS_POSTINFO(userInfo);
-    console.log(result)
+    //console.log(result)
+    // // await delay(10000);
     setUserInfo(result.data);
+    console.log('PostUserInfo',result);
+    console.log('resultdatadata',result.data.data)
+    setUserIdFromdata(result.data.data);
     console.log(userInfo);
     if (result) {
       setMessage(result.data?.message);
@@ -64,22 +69,12 @@ const Hello = () => {
 
 
 
-  async function getUserId() {
-    const result = await API.USERS_INFOLIST();
-    console.log(result,result.data.data);
-    setUserIdFromdata(result?.data.data);
-    console.log(result?.data);
-
-    if (result) {
-      setMessage(result?.data?.message);
-    }
-  }
-  useEffect(() => {
-    getUserId();
-  }, []);
+  
 
   async function getUserFromBankData() {
     const result = await API.USERS_LIST();
+    // await delay(10000);
+
     console.log("bankdata",result)
     setUser({
       divisionName: result?.data?.divisionName,
@@ -89,8 +84,8 @@ const Hello = () => {
       unitName: result?.data?.unitName,
       id: null,
     });
-    console.log(user);
-    // window.electron.store.set('firstname',result?.data?.firstname)
+  
+    window.electron.store.set('firstname',result?.data?.firstName)
 
     if (result) {
       setMessage(result?.data?.message);
@@ -99,8 +94,26 @@ const Hello = () => {
 
   useEffect(() => {
     getUserFromBankData();
+    
   }, []);
 
+
+  async function getUserId() {
+    const result = await API.USERS_INFOLIST();
+    // console.log(result,result.data.data);
+    setUserIdFromdata(result?.data);
+    await delay(20000);
+
+    console.log(result?.data);
+
+    if (result) {
+      setMessage(result?.data?.message);
+    }
+  }
+  useEffect(() => {
+    
+    getUserId();
+  }, []);
   async function postVote(params: any) {
     const result = await API.USERS_POST(params);
     if (result) {
@@ -116,7 +129,7 @@ const Hello = () => {
         section: user.meslekAd,
         Unit: user.unitName,
         vote: checkVote[check],
-        userId: userIdFromData.id,
+        userId: userIdFromData.id
         
       };
       postVote(postData);
@@ -140,7 +153,7 @@ const Hello = () => {
             fontFamily: 'sans-serif',
           }}
         >
-          Merhaba {window.electron.store.get('firstname')},
+          Merhaba ,{window.electron.store.get('firstname')}
         </span>
         <br></br>
         Bugün kendini nasıl hissediyorsun?
