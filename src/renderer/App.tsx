@@ -55,7 +55,7 @@ const Hello = () => {
     // // await delay(10000);
     setUserInfo(result.data);
     console.log('PostUserInfo',result);
-    console.log('resultdatadata',result.data.data)
+    console.log('resultdatadata',result.data)
     setUserIdFromdata(result.data.data);
     console.log(userInfo);
     if (result) {
@@ -98,22 +98,22 @@ const Hello = () => {
   }, []);
 
 
-  async function getUserId() {
-    const result = await API.USERS_INFOLIST();
-    // console.log(result,result.data.data);
-    setUserIdFromdata(result?.data);
-    await delay(20000);
-
-    console.log(result?.data);
-
-    if (result) {
-      setMessage(result?.data?.message);
-    }
-  }
-  useEffect(() => {
+  // async function getUserId() {
+  //   const result = await API.USERS_INFOLIST();
+  //   // console.log(result,result.data.data);
+  //   setUserIdFromdata(result?.data?.data);
     
-    getUserId();
-  }, []);
+
+  //   console.log("GetUserODFromData",result?.data?.data);
+
+  //   if (result) {
+  //     setMessage(result?.data?.message);
+  //   }
+  // }
+  // useEffect(() => {
+    
+  //   getUserId();
+  // }, []);
   async function postVote(params: any) {
     const result = await API.USERS_POST(params);
     if (result) {
