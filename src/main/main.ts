@@ -14,19 +14,23 @@ import {
   BrowserWindow,
   shell,
   Tray,
-  Notification,
   ipcMain,
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { resolveHtmlPath } from './util';
-
+import fetch from 'electron-fetch';
 import Store from 'electron-store';
 import { screen } from 'electron/main';
+import { json } from 'stream/consumers';
+import { stringify } from 'querystring';
+
+
 
 const store = new Store();
 
 let username = '';
+var dateFormat=new Date().toISOString().slice(0,10);
 
 ipcMain.on('electron-store-get', async (event, val) => {
   event.returnValue = store.get(val);
@@ -39,23 +43,15 @@ ipcMain.on('electron-store-set', async (event, key, val) => {
   store.set(key, val);
 });
 
+
+
 var isAppQuitting = false;
 let tray = null;
 let hour = new Date();
 let pcTime = new Date();
 hour.setHours(randomHour(9, 11), randomMinute(1, 58), 0);
 
-const NOTIFICATION_TITLE = 'Personel Memnuniyet Anketi';
-const NOTIFICATION_BODY = `Merhaba ${username},  \nburaya tıklayarak bugün bize nasıl hissettiğinizi söyleyebilirsiniz.`;
-function showNotification() {
-  return new Notification({
-    title: NOTIFICATION_TITLE,
-    body: NOTIFICATION_BODY,
-    icon: 'assets/happy.ico',
-    sound: 'darwin',
-    timeoutType: 'never',
-  });
-}
+
 
 console.log(hour);
 
@@ -73,14 +69,12 @@ function traySystem() {
     mainWindow?.isVisible() ? mainWindow.hide() : mainWindow?.show();
   });
 }
-let i = 0;
 
 function startNotifyTimerAM() {
   var timeInterval: any = setInterval(() => {
     store.set('date', new Date());
     if (hour == pcTime) {
       console.log(hour, pcTime);
-      showNotification().show();
       mainWindow.show();
       clearInterval(timeInterval);
       hour.setHours(randomHour(13, 17), randomMinute(1, 58), 0);
@@ -88,12 +82,12 @@ function startNotifyTimerAM() {
     }
   }, 1000);
 }
-
+var afterRemoveOsName = ""
 function osUserName() {
   var os = require('os');
   var osName = os.userInfo().username;
 
-  const afterRemoveOsName = osName.slice(2);
+  afterRemoveOsName = osName.slice(2);
   console.log(afterRemoveOsName);
   //window.electron.store.set('osUser',afterRemoveOsName)
 
@@ -103,13 +97,14 @@ function osUserName() {
     store.set('osUser', afterRemoveOsName);
   });
 }
+
+
 osUserName();
 function startNotifyTimerPM() {
   var timeInterval: any = setInterval(() => {
     store.set('date', new Date());
     if (hour == pcTime) {
       console.log(hour, pcTime);
-      showNotification().show();
       clearInterval(timeInterval);
       hour.setHours(randomHour(9, 11), randomMinute(1, 58), 0);
       startNotifyTimerAM();
@@ -117,19 +112,6 @@ function startNotifyTimerPM() {
   }, 1000);
 }
 
-// notifier.notify({
-//   title: 'Burgan Bank Anket Hatırlatma',
-//   message: 'Merhaba,',
-//   sound: true,
-//   wait: true,
-//   icon: 'assets/happy.ico',
-//   contentImage: 'assets/happy.ico',
-// });
-// notifier.on('click', function (notifierObject: any, options: any) {
-//   // Triggers if `wait: true` and user clicks notification
-
-//   mainWindow?.show();
-// });
 
 export default class AppUpdater {
   constructor() {
@@ -234,11 +216,58 @@ const createWindow = async () => {
   });
 
   mainWindow.on('close', function (event: any) {
+    console.log(afterRemoveOsName)
+     fetch('https://localhost:7038/api/UserInfoAdd?sicilNo='+afterRemoveOsName)
+    .then(res=>res.json())
+    .then(json=>
+    {
+      console.log(json.id)
+      let data=json.data;
+      let body={
+        "userId": json.data.id,
+        "department": json.data.department,
+        "section": json.data.section,
+        "unit": json.data.unit,
+        "voteDate": dateFormat,
+        "vote": 0,
+      }
+      fetch('https://localhost:7038/api/userTest',{method:'POST',body:JSON.stringify(body),headers:{'Content-Type': 'application/json'},
+  
+  
+    }).then(res1=>res1.json()).then(json1=>console.log(json1))}).catch((e)=>{
+      console.log('error',e.message);
+    })
+    //
+      //await getUserInfo();
+    console.log("jhkjhkjhj")
     if (!isAppQuitting) {
       event.preventDefault();
       mainWindow?.hide();
-    }
+      
+     }
   });
+  // let postData = {
+  //   department:window.electron.store.get('databaseDepartment') || null,
+  //   section:window.electron.store.get('databaseSection') || null,
+  //   unit:window.electron.store.get('databaseUnitName') || null,
+  //   vote: 0,
+  //   userId: window.electron.store.get('userIdToMain'),
+  //   votedate:dateFormat
+    
+  // };
+  // function postUserData(params:any) {
+    
+  // }
+
+  // async function getUserInfo() {
+  //   // console.log(afterRemoveOsName)
+  //   // const result = await API.USERS_POSTINFO(afterRemoveOsName);
+  //   // console.log(result.data)
+
+  //   await fetch('https://localhost:7038/api/IKDb?sicilNo='+afterRemoveOsName)
+  //   .then(res=>res.json())
+  //   .then(json=>console.log(json))
+  // }
 
   // const menuBuilder = new MenuBuilder(mainWindow);
   // menuBuilder.buildMenu();
@@ -257,6 +286,8 @@ const createWindow = async () => {
 /**
  * Add event listeners...
  */
+
+
 
 app.on('before-quit', function (event: any) {
   isAppQuitting = true;
@@ -288,6 +319,3 @@ app.on('activate', () => {
     createWindow();
   }
 });
-function cors(): any {
-  throw new Error('Function not implemented.');
-}

@@ -1,10 +1,13 @@
-import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { API } from './src/api';
 
-let dateInfo=new Date(moment().format('MMMM Do YYYY, h:mm:ss'));
+
+
+var dateFormat=new Date().toISOString().slice(0,10);
+console.log(dateFormat)
+
 const delay = (ms: number | undefined) => new Promise((resolve) => setTimeout(resolve, ms));
 const checkVote: any = {
   sad: 1,
@@ -35,9 +38,16 @@ const Hello = () => {
   //   date:null
 
   // })
+  /**
+   *
+   */
+  
 
   const [userInfo, setUserInfo] = useState({
     UserId: window.electron.store.get('osUser') || '',
+    department:window.electron.store.get('databaseDepartment') || null,
+    section:window.electron.store.get('databaseSection') || null,
+    unit:window.electron.store.get('databaseUnitName') || null
     
   });
 
@@ -52,11 +62,12 @@ const Hello = () => {
   async function postUserInfo(userInfo: any) {
     const result = await API.USERS_POSTINFO(userInfo);
     //console.log(result)
-    // // await delay(10000);
+     await delay(5000);
     setUserInfo(result.data);
     console.log('PostUserInfo',result);
     console.log('resultdatadata',result.data)
     setUserIdFromdata(result.data.data);
+    window.electron.store.set('userIdToMain',userIdFromData.id)
     console.log(userInfo);
     if (result) {
       setMessage(result.data?.message);
@@ -76,6 +87,9 @@ const Hello = () => {
     // await delay(10000);
 
     console.log("bankdata",result)
+    window.electron.store.set('databaseDepartment',result?.data?.divisionName)
+    window.electron.store.set('databaseSection',result?.data?.meslekAd)
+    window.electron.store.set('databaseUnitName',result?.data?.unitName)
     setUser({
       divisionName: result?.data?.divisionName,
       firstName: result?.data?.firstName,
@@ -129,15 +143,18 @@ const Hello = () => {
         section: user.meslekAd,
         Unit: user.unitName,
         vote: checkVote[check],
-        userId: userIdFromData.id
+        userId: userIdFromData.id,
+        votedate:dateFormat
         
       };
       postVote(postData);
     }
   }, [check]);
 
+
   return (
     <div>
+      
       <div
         style={{
           marginBottom: '2rem',
@@ -153,7 +170,7 @@ const Hello = () => {
             fontFamily: 'sans-serif',
           }}
         >
-          Merhaba ,{window.electron.store.get('firstname')}
+          Merhaba , {window.electron.store.get('firstname')}
         </span>
         <br></br>
         Bugün kendini nasıl hissediyorsun?
