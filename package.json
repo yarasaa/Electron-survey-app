@@ -7,15 +7,13 @@
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never",
+    "package": "electron-forge package",
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts && opencollective-postinstall",
-    "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
+    "start": "electron-forge start",
     "start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only ./src/main/main.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
     "test": "jest",
-    "prepare": "husky install",
-    "app:dir": "electron -builder --dir",
-    "app:dist": "electron-builder"
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [],
@@ -141,6 +139,11 @@
     ]
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.4",
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
     "@testing-library/jest-dom": "^5.16.1",
@@ -205,17 +208,21 @@
     "electron-debug": "^3.2.0",
     "electron-fetch": "^1.7.4",
     "electron-log": "^4.4.4",
+    "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.6.5",
+    "eslint": "^8.13.0",
     "history": "^5.2.0",
     "left-pad": "^1.3.0",
     "moment": "^2.29.2",
+    "ninja": "^3.0.8",
     "node-notifier": "^10.0.1",
     "node-signalr": "^2.0.6",
     "os": "^0.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-router-dom": "^6.2.1"
+    "react-router-dom": "^6.2.1",
+    "update-electron-app": "^2.0.1"
   },
   "devEngines": {
     "node": ">=14.x",
@@ -238,5 +245,32 @@
       }
     ],
     "singleQuote": true
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "electron_survey_app"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }

@@ -60,22 +60,32 @@ const Hello = () => {
   
   
   async function postUserInfo(userInfo: any) {
-    const result = await API.USERS_POSTINFO(userInfo);
     //console.log(result)
-     await delay(5000);
-    setUserInfo(result.data);
-    console.log('PostUserInfo',result);
-    console.log('resultdatadata',result.data)
-    setUserIdFromdata(result.data.data);
-    window.electron.store.set('userIdToMain',userIdFromData.id)
-    console.log(userInfo);
-    if (result) {
-      setMessage(result.data?.message);
+    try {
+      const result = await API.USERS_POSTINFO(userInfo);
+      await delay(5000);
+      setUserInfo(result.data);
+      console.log('PostUserInfo',result);
+      console.log('resultdatadata',result.data)
+      setUserIdFromdata(result.data.data);
+      window.electron.store.set('userIdToMain',userIdFromData.id)
+      console.log(userInfo);
+      if (result) {
+        setMessage(result.data?.message);
+      }
+    } catch (error) {
+      console.log("User bilgisi post hatası",error)
     }
+  
   }
 
   useEffect(() => {
-    postUserInfo(userInfo);
+    try {
+      postUserInfo(userInfo);
+    } catch (error) {
+      console.log("Use effect tabloya kullanıcı bilgisi yollama",error);
+    }
+    
   }, []);
 
 
@@ -83,31 +93,44 @@ const Hello = () => {
   
 
   async function getUserFromBankData() {
-    const result = await API.USERS_LIST();
-    // await delay(10000);
-
-    console.log("bankdata",result)
-    window.electron.store.set('databaseDepartment',result?.data?.divisionName)
-    window.electron.store.set('databaseSection',result?.data?.meslekAd)
-    window.electron.store.set('databaseUnitName',result?.data?.unitName)
-    setUser({
-      divisionName: result?.data?.divisionName,
-      firstName: result?.data?.firstName,
-      sicilNo: result?.data?.sicilNo,
-      meslekAd: result?.data?.meslekAd,
-      unitName: result?.data?.unitName,
-      id: null,
-    });
+    
+    try {
+      const result = await API.USERS_LIST();
+      // await delay(10000);
   
-    window.electron.store.set('firstname',result?.data?.firstName)
-
-    if (result) {
-      setMessage(result?.data?.message);
+      console.log("bankdata",result)
+      window.electron.store.set('databaseDepartment',result?.data?.divisionName)
+      window.electron.store.set('databaseSection',result?.data?.meslekAd)
+      window.electron.store.set('databaseUnitName',result?.data?.unitName)
+      setUser({
+        divisionName: result?.data?.divisionName,
+        firstName: result?.data?.firstName,
+        sicilNo: result?.data?.sicilNo,
+        meslekAd: result?.data?.meslekAd,
+        unitName: result?.data?.unitName,
+        id: null,
+      });
+    
+      window.electron.store.set('firstname',result?.data?.firstName)
+  
+      if (result) {
+        setMessage(result?.data?.message);
+      }
+    } catch (error) {
+      console.log("Banka tablosundan kullanıcı bilgisi çekme",error);
     }
+    
+    
+   
   }
 
   useEffect(() => {
-    getUserFromBankData();
+    try {
+      getUserFromBankData();
+    } catch (error) {
+      console.log("Use effect bankadan kullanıcı bilgisi çekme",error);
+    }
+    
     
   }, []);
 
@@ -129,26 +152,38 @@ const Hello = () => {
   //   getUserId();
   // }, []);
   async function postVote(params: any) {
-    const result = await API.USERS_POST(params);
-    if (result) {
-      console.log(result);
-      setMessage(result?.data?.message);
+
+    try {
+      const result = await API.USERS_POST(params);
+      if (result) {
+        console.log(result);
+        setMessage(result?.data?.message);
+      }
+    } catch (error) {
+      console.log("Post vote işlemi",error);
     }
+   
   }
 
   useEffect(() => {
-    if (!!check) {
-      let postData = {
-        department: user.divisionName,
-        section: user.meslekAd,
-        Unit: user.unitName,
-        vote: checkVote[check],
-        userId: userIdFromData.id,
-        votedate:dateFormat
-        
-      };
-      postVote(postData);
+    try {
+      if (!!check) {
+        let postData = {
+          department: user.divisionName,
+          section: user.meslekAd,
+          Unit: user.unitName,
+          vote: checkVote[check],
+          userId: userIdFromData.id,
+          votedate:dateFormat
+          
+        };
+        postVote(postData);
+      }
+    } catch (error) {
+      console.log("Use effect vote post işlemi",error);
     }
+    
+   
   }, [check]);
 
 

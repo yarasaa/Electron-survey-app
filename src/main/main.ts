@@ -22,9 +22,6 @@ import { resolveHtmlPath } from './util';
 import fetch from 'electron-fetch';
 import Store from 'electron-store';
 import { screen } from 'electron/main';
-import { json } from 'stream/consumers';
-import { stringify } from 'querystring';
-
 
 
 const store = new Store();
@@ -86,7 +83,6 @@ var afterRemoveOsName = ""
 function osUserName() {
   var os = require('os');
   var osName = os.userInfo().username;
-
   afterRemoveOsName = osName.slice(2);
   console.log(afterRemoveOsName);
   //window.electron.store.set('osUser',afterRemoveOsName)
@@ -172,10 +168,12 @@ const createWindow = async () => {
     width: 450,
     height: 300,
     icon: getAssetPath('happy.ico'),
-    resizable: true,
+    resizable: false,
     autoHideMenuBar: true,
     transparent: false,
     frame: true,
+    minimizable:false,
+    alwaysOnTop:true,
     opacity: 0.9,
     titleBarStyle: 'default',
     x: screen.getPrimaryDisplay().workAreaSize.width - 450,
@@ -207,8 +205,8 @@ const createWindow = async () => {
   });
 
   mainWindow.on('minimize', function (event: any) {
-    event.preventDefault();
-    mainWindow?.hide();
+      event.preventDefault();
+      mainWindow?.show();
   });
 
   mainWindow.on('closed', () => {
@@ -292,6 +290,8 @@ const createWindow = async () => {
 app.on('before-quit', function (event: any) {
   isAppQuitting = true;
 });
+
+
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
